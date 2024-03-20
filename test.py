@@ -106,3 +106,4 @@ if __name__ == "__main__":
     except:
         GPIO.cleanup()
         raise
+    GPIO.cleanup()
