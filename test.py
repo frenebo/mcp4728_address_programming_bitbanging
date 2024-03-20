@@ -11,7 +11,7 @@ MCP_DEF_ADDR = 0x60
 
 def setup_board():
     # Set up pin numbering scheme
-    GPIO.setmode(GPIO.board)
+    GPIO.setmode(GPIO.BOARD)
 
     # Set up pins we are going to be using
     GPIO.setup(LDAC_1,GPIO.OUT)
