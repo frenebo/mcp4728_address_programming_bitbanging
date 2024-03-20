@@ -168,7 +168,8 @@ def do_write_ldac1_address_bits():
     if not send_byte(third_byte):
         raise Exception("third byte failed")
     
-    # Fourth one repeats as confirmation
+    third_byte = '011' + new_address_bits + '11'
+    # Fourth byte is for confirmation
     if not send_byte(third_byte):
         raise Exception("Fourth byte (confirmation) failed")
     
