@@ -2,10 +2,10 @@ import RPi.GPIO as GPIO
 import time
 
 
-LDAC_1 = 11
-LDAC_2 = 13
-SDA = 3 #  I2C Data
-SCL = 5 # I2C Clock
+LDAC_1 = 15
+LDAC_2 = 16
+SDA = 11 #  I2C Data
+SCL = 13 # I2C Clock
 MCP_DEF_ADDR = 0x60
 
 
