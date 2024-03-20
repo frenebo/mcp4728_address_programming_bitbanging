@@ -14,11 +14,11 @@ def setup_board():
     GPIO.setmode(GPIO.BOARD)
 
     # Set up pins we are going to be using
-    GPIO.setup(LDAC_1,GPIO.OUT)
-    GPIO.setup(LDAC_2,GPIO.OUT)
+    GPIO.setup(LDAC_1,GPIO.OUT, initial=1)
+    GPIO.setup(LDAC_2,GPIO.OUT, initial=1)
 
-    GPIO.setup(SDA, GPIO.OUT)
-    GPIO.setup(SCL, GPIO.OUT)
+    GPIO.setup(SDA, GPIO.OUT, initial=1)
+    GPIO.setup(SCL, GPIO.OUT, initial=1)
 
     GPIO.output(LDAC_1, GPIO.HIGH)
     GPIO.output(LDAC_2, GPIO.HIGH)
