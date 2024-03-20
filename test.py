@@ -28,7 +28,6 @@ def setup_board():
 
 # Start: high-to-low transition on SDA while SCL is high
 def do_start_condition():
-    GPIO.setup(SDA, GPIO.OUT)
     if GPIO.input(SDA) != 1:
         # SCL must be high when SDA goes low - otherwise this is a stop condition
         GPIO.output(SCL, GPIO.LOW)
@@ -42,7 +41,6 @@ def do_start_condition():
     GPIO.output(SCL, GPIO.LOW)
 
 def do_stop_condition():
-    GPIO.setup(SDA, GPIO.OUT)
     # SDA should be low if not already low
     if GPIO.input(SDA) != 1:
         # Bring clock down first just in case
