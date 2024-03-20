@@ -28,16 +28,37 @@ def setup_board():
 
 # Start: high-to-low transition on SDA while SCL is high
 def do_start_condition():
+    # SCL must be high when SDA goes low - otherwise this is a stop condition
+    GPIO.output(SCL, GPIO.LOW)
+    GPIO.output(SDA, GPIO.HIGH)
+
+    # A high-to-low transition for SDA while SCL is HIGH indicates start condition
     GPIO.output(SCL, GPIO.HIGH)
     GPIO.output(SDA, GPIO.LOW)
 
-    # Pull SCL low, so ready for first bit
+    # Pull SCL low, so ready to send clock pulses
     GPIO.output(SCL, GPIO.LOW)
+
+def do_stop_conditoin():
+    # Bring clock down if not already low
+    GPIO.output(SCL, GPIO.LOW)
+    # SDA starts low
+    GPIO.output(SDA, GPIO.LOW)
+
+    # A low-to-high transition for SDA while SCL is HIGH indicates stop condition
+    GPIO.output(SCL, GPIO.HIGH)
+    GPIO.output(SDA, GPIO.HIGH)
 
 def num_to_byte_str(val):
     return '{0:b}'.format(val).zfill(8)
 
-def send_byte(byte_str):
+def send_byte(
+    byte_str,
+    set_ldac1_before_ack=None,
+    set_ldac2_before_ack=None,
+    ):
+    if len(byte_str) != 8:
+        raise Exception("Byte string should contain 8 characters")
     # if val > 0xFF or val < 0 or int(val) != val:
     #     raise Exception("Invalid byte ''".format(val))
     
@@ -57,18 +78,29 @@ def send_byte(byte_str):
             else:
                 # Don't need to change data bit
                 pass
-        else:
+        elif digit == "0":
             if dat_high:
                 dat_high = False
                 GPIO.output(SDA, GPIO.LOW)
             else:
                 # Don't need to change data bit
                 pass
+        else:
+            raise Exception("Invalid binary digit '{}'".format(digit))
         GPIO.output(SCL, GPIO.HIGH)
         GPIO.output(SCL, GPIO.LOW)
     
     # Release SDA
     GPIO.setup(SDA, GPIO.OUT)
+
+    if set_ldac1_before_ack is not None:
+        if set_ldac1_before_ack != GPIO.HIGH and set_ldac1_before_ack != GPIO.LOW:
+            raise Exception("Must provide GPIO HIGH/LOW ldac bit")
+        GPIO.output(LDAC_1, set_ldac1_before_ack)
+    if set_ldac2_before_ack is not None:
+        if set_ldac2_before_ack != GPIO.HIGH and set_ldac2_before_ack != GPIO.LOW:
+            raise Exception("Must provide GPIO HIGH/LOW ldac bit")
+        GPIO.output(LDAC_2, set_ldac2_before_ack)
 
     # Check acknowledge
     GPIO.output(SCL, GPIO.HIGH)
@@ -78,6 +110,52 @@ def send_byte(byte_str):
     # Low bit indicates acknowledgement
     return not ackbit_high
 
+def do_general_reset():
+    general_call_command = '00000000'
+    if not send_byte(general_call_command):
+        raise Exception("Failed")
+    
+    general_call_reset_byte = '00000110'
+    if not send_byte(general_call_reset_byte):
+        raise Exception("Failed")
+
+
+# def do_restart()
+def read_byte_from_slave():
+    GPIO.setup(SDA, GPIO.IN)
+    result = []
+    for i in range(8):
+        GPIO.output(SCL, GPIO.HIGH)
+        bit = GPIO.input(SDA)
+        GPIO.output(SCL, GPIO.LOW)
+        result.append(bit)
+    
+    # Acknowledge
+    GPIO.setup(SDA, GPIO.OUT)
+    GPIO.output(SDA, GPIO.HIGH)
+    GPIO.output(SCL, GPIO.HIGH)
+    GPIO.output(SCL, GPIO.LOW)
+
+    return result
+
+
+def do_call_read_ldac1_address_bits():
+    general_call_command = '00000000'
+    if not send_byte(general_call_address):
+        raise Exception("Failed")
+    
+    gnl_read_second_byte = '00001100'
+    if not send_byte(gnl_read_second_byte, set_ldac1_before_ack=GPIO.LOW):
+        raise Exception("Failed")
+    
+    # Restart bit
+    do_start_condition()
+
+    gnl_read_third_byte = '11000001'
+    if not send_byte(gnl_read_third_byte):
+        raise Exception("Failed")
+    
+    read_byte_from_slave()
 
 def main():
     setup_board()
@@ -91,14 +169,15 @@ def main():
 
 
     do_start_condition()
-    general_call_command = '00000000'
-    if not send_byte(general_call_command):
-        raise Exception("Failed")
-    
-    general_call_reset_byte = '00000110'
-    if not send_byte(general_call_reset_byte):
-        raise Exception("Failed")
 
+    do_general_reset()
+
+    do_call_read_ldac1_address_bits()
+
+    address_data = read_byte_from_slave()
+    print(address_data)
+
+    do_stop_conditoin
 
 if __name__ == "__main__":
     try:
