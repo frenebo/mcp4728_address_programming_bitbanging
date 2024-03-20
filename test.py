@@ -202,7 +202,7 @@ def do_call_read_ldac1_address_bits():
     # print(address_data)
     do_stop_condition()
 
-    GPIO.output(LDAC_1, GPIO.HIGH)
+    GPIO.output(LDAC_1, GPIO.HIGH, initial=0)
 
     return address_data
 
@@ -224,7 +224,7 @@ def main():
 
     print(addr_data)
 
-    do_write_ldac1_address_bits()
+    # do_write_ldac1_address_bits()
 
 
 
