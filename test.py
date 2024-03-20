@@ -1,5 +1,5 @@
 import RPi.GPIO as GPIO
-
+import time
 
 
 LDAC_1 = 15
@@ -103,7 +103,8 @@ def send_byte(
         if set_ldac2_before_ack != GPIO.HIGH and set_ldac2_before_ack != GPIO.LOW:
             raise Exception("Must provide GPIO HIGH/LOW ldac bit")
         GPIO.output(LDAC_2, set_ldac2_before_ack)
-
+    
+    time.sleep(10/2000000)
     # Check acknowledge
     GPIO.output(SCL, GPIO.HIGH)
     ackbit_high = GPIO.input(SDA)
