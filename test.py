@@ -4,8 +4,8 @@ import time
 
 LDAC_1 = 15
 LDAC_2 = 16
-SDA = 11 #  I2C Data
-SCL = 13 # I2C Clock
+SDA = 3 #  I2C Data
+SCL = 5 # I2C Clock
 MCP_DEF_ADDR = 0x60
 
 
@@ -110,6 +110,8 @@ def send_byte(
     GPIO.output(SCL, GPIO.HIGH)
     ackbit_high = GPIO.input(SDA)
     GPIO.output(SCL, GPIO.LOW)
+
+    GPIO.setup(SDA, GPIO.OUT)
 
     # GPIO.setup(SDA, GPIO.OUT)
     # Low bit indicates acknowledgement
