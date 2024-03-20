@@ -182,7 +182,7 @@ def main():
 
 
 
-    do_general_reset()
+    # do_general_reset()
 
     addr_data = do_call_read_ldac1_address_bits()
 
