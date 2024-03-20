@@ -220,9 +220,9 @@ def main():
 
     # do_general_reset()
 
-    # addr_data = do_call_read_ldac1_address_bits()
+    addr_data = do_call_read_ldac1_address_bits()
 
-    # print(addr_data)
+    print(addr_data)
 
     do_write_ldac1_address_bits()
 
