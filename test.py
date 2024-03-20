@@ -28,9 +28,10 @@ def setup_board():
 
 # Start: high-to-low transition on SDA while SCL is high
 def do_start_condition():
-    # SCL must be high when SDA goes low - otherwise this is a stop condition
-    GPIO.output(SCL, GPIO.LOW)
-    GPIO.output(SDA, GPIO.HIGH)
+    if GPIO.input(SDA) != 1:
+        # SCL must be high when SDA goes low - otherwise this is a stop condition
+        GPIO.output(SCL, GPIO.LOW)
+        GPIO.output(SDA, GPIO.HIGH)
 
     # A high-to-low transition for SDA while SCL is HIGH indicates start condition
     GPIO.output(SCL, GPIO.HIGH)
@@ -40,10 +41,11 @@ def do_start_condition():
     GPIO.output(SCL, GPIO.LOW)
 
 def do_stop_condition():
-    # Bring clock down if not already low
-    GPIO.output(SCL, GPIO.LOW)
-    # SDA starts low
-    GPIO.output(SDA, GPIO.LOW)
+    # SDA should be low if not already low
+    if GPIO.input(SDA) != 1:
+        # Bring clock down first just in case
+        GPIO.output(SCL, GPIO.LOW)
+        GPIO.output(SDA, GPIO.LOW)
 
     # A low-to-high transition for SDA while SCL is HIGH indicates stop condition
     GPIO.output(SCL, GPIO.HIGH)
@@ -163,6 +165,8 @@ def do_call_read_ldac1_address_bits():
     address_data = read_byte_from_slave()
     # print(address_data)
     do_stop_condition()
+
+    GPIO.output(LDAC_1, GPIO.HIGH)
 
     return address_data
 
