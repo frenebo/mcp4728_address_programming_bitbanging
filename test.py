@@ -4,8 +4,8 @@ import time
 
 LDAC_1 = 15
 LDAC_2 = 16
-SDA = 11 #  I2C Data
-SCL = 13 # I2C Clock
+SDA = 13 #  I2C Data
+SCL = 11 # I2C Clock
 MCP_DEF_ADDR = 0x60
 
 
