@@ -80,6 +80,7 @@ def send_byte(val):
 
 
 def main():
+    setup_board()
     # print(MCP_DEF_ADDR)
     # Binary address as string
     # bin_addr_str = '{0:b}'.format(MCP_DEF_ADDR).zfill(8)
