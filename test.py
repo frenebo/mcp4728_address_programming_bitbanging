@@ -129,7 +129,7 @@ def do_general_reset():
 
 # def do_restart()
 def read_byte_from_slave(): 
-    GPIO.setup(SDA, GPIO.IN, pull_up_down=GPIO.PUD_UP))
+    GPIO.setup(SDA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     result = []
     for i in range(8):
         GPIO.output(SCL, GPIO.HIGH)
