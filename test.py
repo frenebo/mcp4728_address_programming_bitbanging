@@ -141,7 +141,7 @@ def read_byte_from_slave():
 
 def do_call_read_ldac1_address_bits():
     general_call_command = '00000000'
-    if not send_byte(general_call_address):
+    if not send_byte(general_call_command):
         raise Exception("Failed")
     
     gnl_read_second_byte = '00001100'
