@@ -37,9 +37,9 @@ def do_start_condition():
 def num_to_byte_str(val):
     return '{0:b}'.format(val).zfill(8)
 
-def send_byte(val):
-    if val > 0xFF or val < 0 or int(val) != val:
-        raise Exception("Invalid byte ''".format(val))
+def send_byte(byte_str):
+    # if val > 0xFF or val < 0 or int(val) != val:
+    #     raise Exception("Invalid byte ''".format(val))
     
     # Take control of SDA
     GPIO.setup(SDA, GPIO.OUT)
@@ -49,7 +49,7 @@ def send_byte(val):
     GPIO.output(SDA, GPIO.LOW)
     dat_high = False
 
-    for digit in num_to_byte_str:
+    for digit in byte_str:
         if digit == "1":
             if not dat_high:
                 dat_high = True
