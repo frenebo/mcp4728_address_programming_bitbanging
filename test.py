@@ -92,8 +92,9 @@ def send_byte(
         GPIO.output(SCL, GPIO.HIGH)
         GPIO.output(SCL, GPIO.LOW)
     
+    # GPIO
     # Release SDA
-    GPIO.setup(SDA, GPIO.IN)
+    GPIO.setup(SDA, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
     if set_ldac1_before_ack is not None:
         if set_ldac1_before_ack != GPIO.HIGH and set_ldac1_before_ack != GPIO.LOW:
@@ -127,8 +128,8 @@ def do_general_reset():
 
 
 # def do_restart()
-def read_byte_from_slave():
-    GPIO.setup(SDA, GPIO.IN)
+def read_byte_from_slave(): 
+    GPIO.setup(SDA, GPIO.IN, pull_up_down=GPIO.PUD_UP))
     result = []
     for i in range(8):
         GPIO.output(SCL, GPIO.HIGH)
