@@ -143,6 +143,36 @@ def read_byte_from_slave():
 
     return result
 
+def do_write_ldac1_address_bits():
+    do_start_condition()
+
+    # Factory default address bits
+    current_address_bits = '000'
+
+    # New bits!
+    new_address_bits = '001'
+
+    first_byte = '1100' + current_address_bits + '0'
+
+    if not send_byte(first_byte):
+        raise Exception("first byte failed")
+
+    second_byte = '011' + current_address_bits + '01'
+
+    if not send_byte(second_byte, set_ldac1_before_ack=GPIO.LOW):
+        raise Exception("Second byte failed")
+    
+    third_byte = '011' + new_address_bits + '10'
+    if not send_byte(third_byte):
+        raise Exception("third byte failed")
+    
+    # Fourth one repeats as confirmation
+    if not send_byte(third_byte):
+        raise Exception("Fourth byte (confirmation) failed")
+    
+
+    do_stop_condition()
+    GPIO.output(LDAC_1, GPIO.HIGH)
 
 def do_call_read_ldac1_address_bits():
     do_start_condition()
@@ -159,7 +189,7 @@ def do_call_read_ldac1_address_bits():
 
     gnl_read_third_byte = '11000001'
     if not send_byte(gnl_read_third_byte):
-        raise Exception("Failed")
+        raise Exception("Failed acknowledge third byte")
     
     # read_byte_from_slave()
     address_data = read_byte_from_slave()
@@ -184,9 +214,11 @@ def main():
 
     # do_general_reset()
 
-    addr_data = do_call_read_ldac1_address_bits()
+    # addr_data = do_call_read_ldac1_address_bits()
 
-    print(addr_data)
+    # print(addr_data)
+
+    do_write_ldac1_address_bits()
 
 
 
