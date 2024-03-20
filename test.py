@@ -39,7 +39,7 @@ def do_start_condition():
     # Pull SCL low, so ready to send clock pulses
     GPIO.output(SCL, GPIO.LOW)
 
-def do_stop_conditoin():
+def do_stop_condition():
     # Bring clock down if not already low
     GPIO.output(SCL, GPIO.LOW)
     # SDA starts low
@@ -111,6 +111,7 @@ def send_byte(
     return not ackbit_high
 
 def do_general_reset():
+    do_start_condition()
     general_call_command = '00000000'
     if not send_byte(general_call_command):
         raise Exception("Failed")
@@ -118,6 +119,8 @@ def do_general_reset():
     general_call_reset_byte = '00000110'
     if not send_byte(general_call_reset_byte):
         raise Exception("Failed")
+
+    do_stop_condition()
 
 
 # def do_restart()
@@ -140,6 +143,7 @@ def read_byte_from_slave():
 
 
 def do_call_read_ldac1_address_bits():
+    do_start_condition()
     general_call_command = '00000000'
     if not send_byte(general_call_command):
         raise Exception("Failed")
@@ -155,7 +159,12 @@ def do_call_read_ldac1_address_bits():
     if not send_byte(gnl_read_third_byte):
         raise Exception("Failed")
     
-    read_byte_from_slave()
+    # read_byte_from_slave()
+    address_data = read_byte_from_slave()
+    # print(address_data)
+    do_stop_condition()
+
+    return address_data
 
 def main():
     setup_board()
@@ -168,16 +177,14 @@ def main():
     read_mcp_byte = mcp_7bit_address + "0"
 
 
-    do_start_condition()
 
     do_general_reset()
 
-    do_call_read_ldac1_address_bits()
+    addr_data = do_call_read_ldac1_address_bits()
 
-    address_data = read_byte_from_slave()
-    print(address_data)
+    print(addr_data)
 
-    do_stop_conditoin
+
 
 if __name__ == "__main__":
     try:
